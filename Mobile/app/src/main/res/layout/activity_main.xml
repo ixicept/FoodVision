@@ -1,13 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
+    android:gravity="center"
     android:padding="24dp"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
+    android:layout_height="match_parent"
+    android:background="#000000">
     <Button
         android:id="@+id/btn_start_scan"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Start Scan"/>
+        android:text="Start Scan"
+        android:backgroundTint="#FFFFFF"
+        android:textColor="#000000"
+        android:padding="12dp"
+        android:layout_marginTop="16dp"/>
+
+    <Button
+        android:id="@+id/btn_pick_gallery"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Select from Gallery"
+        android:padding="12dp"
+        android:backgroundTint="#FFFFFF"
+        android:textColor="#000000"/>
+
 </LinearLayout>

@@ -4,8 +4,8 @@ public class AnalysisResult {
     public boolean isHealthy;
     public String message;
 
-    public AnalysisResult(boolean h, String m) {
-        isHealthy = h;
-        message = m;
+    public AnalysisResult(boolean isHealthy, String message) {
+        this.isHealthy = isHealthy;
+        this.message = message;
     }
 }

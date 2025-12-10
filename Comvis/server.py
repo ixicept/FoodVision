@@ -23,13 +23,23 @@ def extract_text():
         return jsonify({"error": "File type not allowed"}), 400
     
     try:
+        print(f"[DEBUG] Received file: {file.filename}")
+        
         temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.jpg')
         file.save(temp_file.name)
+        print(f"[DEBUG] Saved temp file to: {temp_file.name}")
         
         ocr = PaddleOCR()
+        print(f"[DEBUG] Running OCR...")
         result = ocr.ocr(temp_file.name)
+        print(f"[DEBUG] OCR result type: {type(result)}, length: {len(result) if result else 0}")
         
-        extracted_text = [line[1][0] for line in result[0]]
+        extracted_text = []
+        if result and len(result) > 0 and result[0]:
+            extracted_text = [line[1][0] for line in result[0]]
+            print(f"[DEBUG] Extracted {len(extracted_text)} lines")
+        else:
+            print(f"[DEBUG] No text found in image")
         
         os.unlink(temp_file.name)
         
@@ -40,6 +50,9 @@ def extract_text():
         }), 200
     
     except Exception as e:
+        print(f"[ERROR] Exception: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return jsonify({
             "success": False,
             "error": str(e),
@@ -54,4 +67,4 @@ def health_check():
     return jsonify({"status": "healthy"}), 200
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5500, debug=False)
+    app.run(host='0.0.0.0', port=5500, debug=True)

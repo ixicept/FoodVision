@@ -103,8 +103,9 @@ public class ScanActivity extends AppCompatActivity {
             finish();
 
         } catch (Exception e) {
-            Log.e("ScanActivity", "Error processing image: " + e.getMessage());
-            Toast.makeText(this, "Cannot process image.", Toast.LENGTH_SHORT).show();
+            Log.e("ScanActivity", "Error processing image: " + e.getMessage(), e);
+            e.printStackTrace();
+            Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 }

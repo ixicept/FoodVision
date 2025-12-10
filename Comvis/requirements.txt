@@ -1,0 +1,8 @@
+flask==2.3.0
+paddleocr>=2.7.0
+opencv-python>=4.6.0
+pillow>=10.0.0
+numpy>=1.21.0
+
+
+

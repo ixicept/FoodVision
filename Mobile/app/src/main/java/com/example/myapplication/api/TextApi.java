@@ -1,18 +1,105 @@
 package com.example.myapplication.api;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.net.Uri;
+import android.util.Log;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.UUID;
 
 public class TextApi {
 
-    public static String extractText(Bitmap img) {
-        return "Calories: 210, Sugar: 15g, Fat: 7g";
+    private static final String TAG = "TextApi";
+    private static final String BASE_URL = "http://127.0.0.1:5500";
+
+    public static String extractTextFromUri(Context context, Uri uri) throws IOException {
+        byte[] imageBytes = readBytes(context, uri);
+        return uploadImageForText(imageBytes);
     }
 
-    public static String extractTextFromUri(Context context, Uri uri) {
-        // TODO call your real OCR API
-        return "Calories: 210 Sugar: 15 Fat: 7";
+    private static String uploadImageForText(byte[] imageBytes) throws IOException {
+        String boundary = "Boundary-" + UUID.randomUUID();
+        String lineEnd = "\r\n";
+        String twoHyphens = "--";
+
+        URL url = new URL(BASE_URL + "/image/extract-text");
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setDoInput(true);
+        conn.setDoOutput(true);
+        conn.setUseCaches(false);
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Connection", "Keep-Alive");
+        conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
+
+        DataOutputStream dos = new DataOutputStream(conn.getOutputStream());
+
+        dos.writeBytes(twoHyphens + boundary + lineEnd);
+        dos.writeBytes("Content-Disposition: form-data; name=\"file\"; filename=\"upload.jpg\"" + lineEnd);
+        dos.writeBytes("Content-Type: image/jpeg" + lineEnd);
+        dos.writeBytes(lineEnd);
+        dos.write(imageBytes);
+        dos.writeBytes(lineEnd);
+        dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+        dos.flush();
+
+        int status = conn.getResponseCode();
+        InputStream is = status >= 200 && status < 300 ? conn.getInputStream() : conn.getErrorStream();
+        String response = readStream(is);
+        conn.disconnect();
+
+        if (status >= 200 && status < 300) {
+            String extracted = parseTextArray(response);
+            return extracted != null ? extracted : "";
+        } else {
+            Log.e(TAG, "Server error: " + status + " -> " + response);
+            throw new IOException("Server returned status " + status);
+        }
     }
 
+    private static byte[] readBytes(Context context, Uri uri) throws IOException {
+        InputStream in = context.getContentResolver().openInputStream(uri);
+        if (in == null) throw new IOException("Cannot open input stream");
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        byte[] data = new byte[4096];
+        int nRead;
+        while ((nRead = in.read(data, 0, data.length)) != -1) {
+            buffer.write(data, 0, nRead);
+        }
+        buffer.flush();
+        in.close();
+        return buffer.toByteArray();
+    }
+
+    private static String readStream(InputStream is) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            sb.append(line);
+        }
+        reader.close();
+        return sb.toString();
+    }
+
+    private static String parseTextArray(String json) {
+        int textIdx = json.indexOf("\"text\"");
+        if (textIdx == -1) return null;
+        int bracket = json.indexOf('[', textIdx);
+        int endBracket = json.indexOf(']', bracket);
+        if (bracket == -1 || endBracket == -1) return null;
+        String arrayContent = json.substring(bracket + 1, endBracket);
+        int firstQuote = arrayContent.indexOf('"');
+        if (firstQuote == -1) return null;
+        int secondQuote = arrayContent.indexOf('"', firstQuote + 1);
+        if (secondQuote == -1) return null;
+        return arrayContent.substring(firstQuote + 1, secondQuote);
+    }
 }

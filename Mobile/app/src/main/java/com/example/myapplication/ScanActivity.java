@@ -84,28 +84,35 @@ public class ScanActivity extends AppCompatActivity {
     }
 
     private void handleScannedImage(Uri uri) {
-        try {
-            Toast.makeText(this, "Processing...", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Processing...", Toast.LENGTH_SHORT).show();
 
-            // Step 1: extract text using your API
-            String extractedText = TextApi.extractTextFromUri(this, uri);
+        // Run network call on background thread
+        new Thread(() -> {
+            try {
+                // Step 1: extract text using your API
+                String extractedText = TextApi.extractTextFromUri(this, uri);
 
-            ScanResult scanResult = new ScanResult(extractedText);
+                ScanResult scanResult = new ScanResult(extractedText);
 
-            // Step 2: analyze the nutrients using your API
-            AnalysisResult analysis = AnalysisApi.analyze(scanResult);
+                // Step 2: analyze the nutrients using your API
+                AnalysisResult analysis = AnalysisApi.analyze(scanResult);
 
-            // Step 3: navigate to ResultActivity
-            Intent i = new Intent(this, ResultActivity.class);
-            i.putExtra("healthy", analysis.isHealthy);
-            i.putExtra("message", analysis.message);
-            startActivity(i);
-            finish();
+                // Step 3: navigate to ResultActivity (must run on main thread)
+                runOnUiThread(() -> {
+                    Intent i = new Intent(this, ResultActivity.class);
+                    i.putExtra("healthy", analysis.isHealthy);
+                    i.putExtra("message", analysis.message);
+                    startActivity(i);
+                    finish();
+                });
 
-        } catch (Exception e) {
-            Log.e("ScanActivity", "Error processing image: " + e.getMessage(), e);
-            e.printStackTrace();
-            Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
-        }
+            } catch (Exception e) {
+                Log.e("ScanActivity", "Error processing image: " + e.getMessage(), e);
+                e.printStackTrace();
+                runOnUiThread(() -> {
+                    Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
+            }
+        }).start();
     }
 }

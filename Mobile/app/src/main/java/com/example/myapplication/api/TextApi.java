@@ -20,7 +20,7 @@ public class TextApi {
     private static final String TAG = "TextApi";
     // For Android Emulator use: http://10.0.2.2:5500
     // For physical device use: http://<YOUR_COMVIS_HOST_IP>:5500
-    private static final String BASE_URL = "http://10.0.2.2:5500";
+    private static final String BASE_URL = "http://192.168.88.1:5500";
 
     public static String extractTextFromUri(Context context, Uri uri) throws IOException {
         byte[] imageBytes = readBytes(context, uri);

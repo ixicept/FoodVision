@@ -2,7 +2,7 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install system dependencies for OpenCV and image processing
+# Install system dependencies for OpenCV/Paddle
 RUN apt-get update --allow-unauthenticated && apt-get install ffmpeg libsm6 libxext6  -y
 
 COPY requirements.txt .

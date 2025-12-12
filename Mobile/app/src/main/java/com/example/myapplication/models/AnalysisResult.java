@@ -1,11 +1,11 @@
 package com.example.myapplication.models;
 
 public class AnalysisResult {
-    public boolean isHealthy;
+    public String prediction;
     public String message;
 
-    public AnalysisResult(boolean isHealthy, String message) {
-        this.isHealthy = isHealthy;
+    public AnalysisResult(String prediction, String message) {
+        this.prediction = prediction;
         this.message = message;
     }
 }

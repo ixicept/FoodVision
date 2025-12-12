@@ -100,7 +100,7 @@ public class ScanActivity extends AppCompatActivity {
                 // Step 3: navigate to ResultActivity (must run on main thread)
                 runOnUiThread(() -> {
                     Intent i = new Intent(this, ResultActivity.class);
-                    i.putExtra("healthy", analysis.isHealthy);
+                    i.putExtra("prediction", analysis.prediction);
                     i.putExtra("message", analysis.message);
                     startActivity(i);
                     finish();

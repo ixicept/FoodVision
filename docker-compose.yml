@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  comvis:
+    build:
+      context: ./Comvis
+      dockerfile: Dockerfile
+    container_name: foodvision-comvis
+    ports:
+      - "5500:5500"
+    networks:
+      - foodvision-network
+    restart: unless-stopped
+
+  dl:
+    build:
+      context: ./DL
+      dockerfile: Dockerfile
+    container_name: foodvision-dl
+    ports:
+      - "5000:5000"
+    networks:
+      - foodvision-network
+    restart: unless-stopped
+
+networks:
+  foodvision-network:
+    driver: bridge

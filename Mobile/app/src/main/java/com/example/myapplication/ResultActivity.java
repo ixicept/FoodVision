@@ -19,13 +19,13 @@ public class ResultActivity extends AppCompatActivity {
             }
         });
 
-        boolean healthy = getIntent().getBooleanExtra("healthy", false);
+        String prediction = getIntent().getStringExtra("prediction");
         String msg = getIntent().getStringExtra("message");
 
         TextView status = findViewById(R.id.txt_health_status);
         TextView desc = findViewById(R.id.txt_health_desc);
 
-        status.setText(healthy ? "Healthy" : "Not Healthy");
+        status.setText(prediction != null ? prediction : "Unknown");
         desc.setText(msg);
 
 

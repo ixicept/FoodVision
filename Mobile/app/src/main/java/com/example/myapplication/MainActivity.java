@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -12,9 +13,13 @@ import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.myapplication.api.AnalysisApi;
+import com.example.myapplication.api.TextApi;
+import com.example.myapplication.models.AnalysisResult;
+import com.example.myapplication.models.ScanResult;
+
 public class MainActivity extends AppCompatActivity {
 
-    // Declare the launcher at the top of your Activity/Fragment.
     private ActivityResultLauncher<PickVisualMediaRequest> pickMedia;
 
     @Override
@@ -30,9 +35,8 @@ public class MainActivity extends AppCompatActivity {
             startActivity(i);
         });
 
-        Button btnGallery = findViewById(R.id.btn_pick_gallery); // Example ID
+        Button btnGallery = findViewById(R.id.btn_pick_gallery); 
         btnGallery.setOnClickListener(v -> {
-            // Launch the photo picker and let the user choose only images.
             pickMedia.launch(new PickVisualMediaRequest.Builder()
                     .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
                     .build());
@@ -40,23 +44,42 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void registerPhotoPicker() {
-        // Creates a photo picker activity launcher in single-select mode.
         pickMedia = registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
-            // Callback is invoked after the user selects a media item or closes the photo picker.
             if (uri != null) {
                 Log.d("PhotoPicker", "Selected URI: " + uri);
-                // Here, you can handle the selected image URI.
-                // For example, you could pass this URI to another Activity.
-                // Intent intent = new Intent(this, AnotherActivity.class);
-                // intent.setData(uri);
-                // startActivity(intent);
-
-                Toast.makeText(this, "Image selected: " + uri.toString(), Toast.LENGTH_LONG).show();
+                
+                handleSelectedImage(uri);
 
             } else {
                 Log.d("PhotoPicker", "No media selected");
                 Toast.makeText(this, "No image selected", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void handleSelectedImage(Uri uri) {
+        Toast.makeText(this, "Processing...", Toast.LENGTH_SHORT).show();
+
+        new Thread(() -> {
+            try {
+                String extractedText = TextApi.extractTextFromUri(this, uri);
+                ScanResult scanResult = new ScanResult(extractedText);
+                AnalysisResult analysis = AnalysisApi.analyze(scanResult);
+
+                runOnUiThread(() -> {
+                    Intent i = new Intent(this, ResultActivity.class);
+                    i.putExtra("prediction", analysis.prediction);
+                    i.putExtra("message", analysis.message);
+                    startActivity(i);
+                });
+
+            } catch (Exception e) {
+                Log.e("MainActivity", "Error processing image: " + e.getMessage(), e);
+                e.printStackTrace();
+                runOnUiThread(() -> {
+                    Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
+            }
+        }).start();
     }
 }

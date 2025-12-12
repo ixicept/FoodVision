@@ -4,7 +4,8 @@ WORKDIR /app
 
 # Copy requirements and install dependencies
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN python -m pip install --upgrade pip \
+	&& pip install --no-cache-dir -r requirements.txt
 
 # Copy model directory and prediction script
 COPY model/ ./model/
@@ -13,5 +14,5 @@ COPY predict.py .
 # Expose Flask port
 EXPOSE 5000
 
-# Run the prediction service
-CMD ["python", "predict.py"]
+# Run the prediction service with UTF-8 encoding
+CMD ["python", "-X", "utf8", "predict.py"]

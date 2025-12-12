@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np
 from flask import Flask, request, jsonify
 from dataclasses import dataclass
-from tensorflow.keras.layers import TextVectorization
+# from tensorflow.keras.layers import TextVectorization
 
 import os
 os.environ["PYTHONIOENCODING"] = "utf-8"

@@ -73,7 +73,7 @@ public class TextApi {
             return extracted != null ? extracted : "";
         } else {
             Log.e(TAG, "Server error: " + status + " -> " + response);
-            throw new IOException("Server returned status " + status + ": " + response);
+            throw new IOException("Comvis service error " + status + ": " + response);
         }
     }
 

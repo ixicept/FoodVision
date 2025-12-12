@@ -4,5 +4,6 @@
         <domain includeSubdomains="true">10.20.176.217</domain>
         <domain includeSubdomains="true">localhost</domain>
         <domain includeSubdomains="true">127.0.0.1</domain>
+        <domain includeSubdomains="true">ngrok-free.dev</domain>
     </domain-config>
 </network-security-config>

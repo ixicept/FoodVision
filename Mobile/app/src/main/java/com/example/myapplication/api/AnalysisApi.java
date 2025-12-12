@@ -15,7 +15,7 @@ import java.net.URL;
 
 public class AnalysisApi {
 
-    private static final String BASE_URL = "http://10.20.176.217:5000";
+    // private static final String BASE_URL = "https://nondefinitive-paleontographical-sawyer.ngrok-free.dev";
 
     public static AnalysisResult analyze(ScanResult scan) {
         ItemsNutrient n = ItemsNutrient.fromText(scan.rawText);
@@ -35,7 +35,7 @@ public class AnalysisApi {
             payload.put("sodium", n.sodium);
 
             // Make HTTP POST request
-            URL url = new URL(BASE_URL + "/predict");
+            URL url = new URL("https://nondefinitive-paleontographical-sawyer.ngrok-free.dev/predict");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");

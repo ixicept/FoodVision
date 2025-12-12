@@ -15,13 +15,10 @@ import java.net.URL;
 
 public class AnalysisApi {
 
-    // private static final String BASE_URL = "https://nondefinitive-paleontographical-sawyer.ngrok-free.dev";
-
     public static AnalysisResult analyze(ScanResult scan) {
         ItemsNutrient n = ItemsNutrient.fromText(scan.rawText);
 
         try {
-            // Create JSON payload
             JSONObject payload = new JSONObject();
             payload.put("ingredients", scan.rawText);
             payload.put("energy_kcal", n.energy_kcal);
@@ -34,19 +31,16 @@ public class AnalysisApi {
             payload.put("salt", n.salt);
             payload.put("sodium", n.sodium);
 
-            // Make HTTP POST request
             URL url = new URL("https://nondefinitive-paleontographical-sawyer.ngrok-free.dev/predict");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setDoOutput(true);
 
-            // Send request
             OutputStream os = conn.getOutputStream();
             os.write(payload.toString().getBytes("UTF-8"));
             os.close();
 
-            // Read response
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
             StringBuilder response = new StringBuilder();
             String line;
@@ -55,7 +49,6 @@ public class AnalysisApi {
             }
             br.close();
 
-            // Parse response
             JSONObject jsonResponse = new JSONObject(response.toString());
             String prediction = jsonResponse.getString("prediction");
 

@@ -69,7 +69,6 @@ public class ScanActivity extends AppCompatActivity {
 
             File imageFile = new File(imageDir, "scan_image.jpg");
 
-            // authority must match manifest provider
             String authority = BuildConfig.APPLICATION_ID + ".provider";
 
             imageUri = FileProvider.getUriForFile(this, authority, imageFile);
@@ -86,18 +85,14 @@ public class ScanActivity extends AppCompatActivity {
     private void handleScannedImage(Uri uri) {
         Toast.makeText(this, "Processing...", Toast.LENGTH_SHORT).show();
 
-        // Run network call on background thread
         new Thread(() -> {
             try {
-                // Step 1: extract text using your API
                 String extractedText = TextApi.extractTextFromUri(this, uri);
 
                 ScanResult scanResult = new ScanResult(extractedText);
 
-                // Step 2: analyze the nutrients using your API
                 AnalysisResult analysis = AnalysisApi.analyze(scanResult);
 
-                // Step 3: navigate to ResultActivity (must run on main thread)
                 runOnUiThread(() -> {
                     Intent i = new Intent(this, ResultActivity.class);
                     i.putExtra("prediction", analysis.prediction);

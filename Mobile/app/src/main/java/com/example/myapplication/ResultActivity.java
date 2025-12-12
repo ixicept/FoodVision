@@ -15,7 +15,7 @@ public class ResultActivity extends AppCompatActivity {
         findViewById(R.id.btn_back).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish(); // Close the current activity and go back
+                finish(); 
             }
         });
 

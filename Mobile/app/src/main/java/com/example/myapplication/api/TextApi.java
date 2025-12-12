@@ -18,10 +18,7 @@ import java.util.UUID;
 public class TextApi {
 
     private static final String TAG = "TextApi";
-    // For Android Emulator use: http://10.0.2.2:5500
-    // For physical device use: http://<YOUR_COMVIS_HOST_IP>:5500
-    // Current Wi‑Fi IP of your PC: 10.20.176.217
-    private static final String BASE_URL = "http://10.20.176.217:5500";
+    private static final String BASE_URL = "http://10.20.184.172:5500";
 
     public static String extractTextFromUri(Context context, Uri uri) throws IOException {
         byte[] imageBytes = readBytes(context, uri);
@@ -42,8 +39,8 @@ public class TextApi {
         conn.setDoOutput(true);
         conn.setUseCaches(false);
         conn.setRequestMethod("POST");
-        conn.setConnectTimeout(10000);
-        conn.setReadTimeout(30000);
+        conn.setConnectTimeout(15000);
+        conn.setReadTimeout(60000);
         conn.setRequestProperty("Connection", "Keep-Alive");
         conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
 
